@@ -1,0 +1,12 @@
+node_modules/
+
+# Uploaded evidence files — don't commit these
+uploads/*
+!uploads/.gitkeep
+
+# SQLite database — keep this out of the repo
+data/
+*.db
+
+# Environment file — always keep secrets out of git
+.env
