@@ -2,6 +2,7 @@ services:
   - type: web
     name: crow-backend
     env: node
+    plan: free
     # Tell Render to only look inside the apps/backend folder
     rootDir: apps/backend
     buildCommand: npm install
