@@ -1,0 +1,15 @@
+# Build target directory
+/apps/contract/target/
+
+# Local environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Cargo lockfile
+/apps/contract/Cargo.lock
+
+# Soroban ledger test snapshots
+/apps/contract/test_snapshots/
