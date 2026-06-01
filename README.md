@@ -185,3 +185,143 @@ Open your browser to `http://localhost:5173`. Everything is now fully connected.
 4. **Verify**: You will see a loading state, and then a new Dashboard card will pop up. This means the contract saved the state on the Docker node, and the backend saved the text metadata to SQLite successfully.
 
 Follow these steps exactly in order. If you hit an error at any specific step, stop and paste the exact error so it can be resolved immediately.
+
+---
+
+## Testnet Deployment & Setup
+
+For deploying and testing in a shared test environment (Stellar Testnet), follow these steps.
+
+### Phase 1: Configure CLI Network
+
+Add the Stellar Testnet configuration to your local CLI profile:
+```bash
+stellar network add \
+  --rpc-url https://soroban-testnet.stellar.org:443 \
+  --network-passphrase "Test SDF Network ; September 2015" \
+  testnet
+```
+
+### Phase 2: Generate & Fund Deployer Account
+
+1. **Generate the keypair**:
+   ```bash
+   stellar keys generate testnet_deployer --network testnet --fund
+   ```
+   *(Note: The `--fund` flag will automatically request test tokens/XLM from SDF's Friendbot to initialize and fund the account).*
+
+2. **Verify your account address (Public Key)**:
+   ```bash
+   stellar keys address testnet_deployer
+   ```
+
+### Phase 3: Compile & Deploy the Contract
+
+1. **Navigate to the contract directory**:
+   ```bash
+   cd apps/contract
+   ```
+2. **Compile and optimize**:
+   ```bash
+   stellar contract build --optimize
+   ```
+3. **Deploy the contract**:
+   ```bash
+   stellar contract deploy \
+     --wasm target/wasm32v1-none/release/micro_escrow.wasm \
+     --source-account testnet_deployer \
+     --network testnet \
+     --alias testnet_escrow
+   ```
+   Save the outputted 56-character contract ID (e.g. `CAGIHNGV...`).
+
+### Phase 4: Generate Bindings & Update Apps
+
+1. **Generate TypeScript bindings** (from `apps/contract`):
+   ```bash
+   stellar contract bindings typescript \
+     --network testnet \
+     --id testnet_escrow \
+     --output-dir ../frontend/src/contracts/micro-escrow
+   ```
+2. **Update the Frontend `.env`**:
+   In `apps/frontend/.env`, update `VITE_CONTRACT_ID` to use the testnet contract ID:
+   ```env
+   VITE_CONTRACT_ID=YOUR_TESTNET_CONTRACT_ID
+   ```
+3. **Configure Frontend / Wallet Network**:
+   When connecting a browser wallet (like Freighter) on the frontend, ensure the wallet network is switched to **Testnet**.
+
+---
+
+## Production (Mainnet) Deployment & Setup
+
+For deploying the Micro-Escrow protocol to the live Stellar Mainnet.
+
+> [!CAUTION]
+> Deploying to Mainnet costs real XLM and deals with real value. Ensure your smart contract has been thoroughly reviewed and audited before executing these steps.
+
+### Phase 1: Configure CLI Network
+
+Add the Stellar Mainnet configuration:
+```bash
+stellar network add \
+  --rpc-url https://soroban-mainnet.stellar.org:443 \
+  --network-passphrase "Public Global Stellar Network ; October 2015" \
+  mainnet
+```
+*(You may swap the `--rpc-url` for your preferred RPC provider endpoint if needed).*
+
+### Phase 2: Set Up Mainnet Deployer Identity
+
+For production security, it is highly recommended to use a hardware wallet or a highly secure CLI key storage.
+
+1. **Add your secure keypair**:
+   If adding an existing private key:
+   ```bash
+   stellar keys add mainnet_deployer
+   ```
+   *(You will be prompted to enter your secret key securely).*
+
+2. **Fund the Account**:
+   Send real XLM to the public address of your `mainnet_deployer` account to pay for the gas and ledger storage fees. You can view your public address using:
+   ```bash
+   stellar keys address mainnet_deployer
+   ```
+
+### Phase 3: Build & Deploy to Mainnet
+
+1. **Navigate to the contract directory**:
+   ```bash
+   cd apps/contract
+   ```
+2. **Compile and optimize**:
+   ```bash
+   stellar contract build --optimize
+   ```
+3. **Deploy the contract**:
+   ```bash
+   stellar contract deploy \
+     --wasm target/wasm32v1-none/release/micro_escrow.wasm \
+     --source-account mainnet_deployer \
+     --network mainnet \
+     --alias live_escrow
+   ```
+   Make a record of the deployed contract address.
+
+### Phase 4: Production Bindings & Environment
+
+1. **Generate TypeScript bindings**:
+   ```bash
+   stellar contract bindings typescript \
+     --network mainnet \
+     --id live_escrow \
+     --output-dir ../frontend/src/contracts/micro-escrow
+   ```
+2. **Point App Services to Mainnet**:
+   * Update the frontend environment configuration (`apps/frontend/.env`):
+     ```env
+     VITE_API_URL=https://your-production-backend.com/api
+     VITE_CONTRACT_ID=YOUR_MAINNET_CONTRACT_ID
+     ```
+   * Set up your production Freighter / Web3 Wallet to point to **Mainnet**.
