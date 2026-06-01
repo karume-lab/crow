@@ -32,7 +32,7 @@ The smart contract handles the actual money — locking, releasing, and resolvin
 
 ```bash
 cd apps/backend
-npm install
+bun install
 ```
 
 ### 2. Set up your environment
@@ -49,12 +49,12 @@ The defaults work fine for local development — you don't need to change anythi
 
 **Development (with auto-restart on file changes):**
 ```bash
-npm run dev
+bun run dev
 ```
 
 **Production:**
 ```bash
-npm start
+bun run start
 ```
 
 The server starts on `http://localhost:3001` by default. Hit `/health` to confirm it's running.
