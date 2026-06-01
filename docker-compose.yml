@@ -1,0 +1,15 @@
+services:
+  # Local Stellar/Soroban standalone node running in a single container
+  stellar-node:
+    image: stellar/quickstart:latest
+    container_name: crow-stellar-standalone
+    # Run in standalone mode (local private network out-of-the-box)
+    command: --standalone --enable-soroban-rpc
+    ports:
+      - "8000:8000" # Horizon API / Friendbot
+      - "8001:8001" # Soroban RPC Server
+    volumes:
+      - stellar-data:/opt/stellar
+
+volumes:
+  stellar-data:
