@@ -15,9 +15,3 @@ services:
         # This will automatically inject the public URL Render gives you
         # So you don't even need to configure it manually!
         value: https://${RENDER_EXTERNAL_HOSTNAME}
-    
-    # We need a disk to store our SQLite database and uploaded files permanently
-    disk:
-      name: crow-data
-      mountPath: /opt/render/project/src/apps/backend/data
-      sizeGB: 1
