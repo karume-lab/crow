@@ -13,3 +13,6 @@
 
 # Soroban ledger test snapshots
 /apps/contract/test_snapshots/
+
+# Node modules
+node_modules/

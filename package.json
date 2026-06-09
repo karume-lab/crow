@@ -1,0 +1,11 @@
+{
+  "name": "crow-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "bun concurrently \"cd apps/frontend && bun dev\" \"cd apps/backend && bun dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.3"
+  }
+}
