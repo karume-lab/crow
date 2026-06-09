@@ -72,6 +72,42 @@ stellar contract bindings typescript \
   --output-dir ../frontend/src/contracts/micro-escrow \
   --overwrite
 
+echo "Patching TypeScript bindings for Vite compatibility..."
+node -e "
+const fs = require('fs');
+const file = '../frontend/src/contracts/micro-escrow/src/index.ts';
+let code = fs.readFileSync(file, 'utf8');
+
+// 1. Remove export * to fix Vite
+code = code.replace('export * from \"@stellar/stellar-sdk\";', '// export * from \"@stellar/stellar-sdk\";');
+
+// 2. Add global ImportMeta
+const augment = \`declare global {
+  interface ImportMeta {
+    env: Record<string, string | undefined>;
+  }
+}
+\`;
+code = augment + code;
+
+// 3. Use env variable for contractId
+code = code.replace(/contractId: \"[A-Z0-9]+\"/, 'contractId: import.meta.env.VITE_CONTRACT_ID as string');
+
+// 4. Remove unused imports that cause TS errors
+code = code.replace('import { Address } from \"@stellar/stellar-sdk\";', '');
+code = code.replace('Result,', '');
+code = code.replace('u64,', '');
+code = code.replace('i64,', '');
+code = code.replace('u128,', '');
+code = code.replace('u256,', '');
+code = code.replace('i256,', '');
+code = code.replace('Timepoint,', '');
+code = code.replace('Duration,', '');
+code = code.replace('i32,', '');
+
+fs.writeFileSync(file, code);
+"
+
 echo "Building TypeScript bindings..."
 cd ../frontend/src/contracts/micro-escrow
 bun install > /dev/null 2>&1
