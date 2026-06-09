@@ -119,19 +119,19 @@ export const Header: React.FC<HeaderProps> = ({
 
 							<MockProfileButton
 								label="Client Profile"
-								address="GB4LYIFI42YRPJRJFJA7THO7YGT5QF2V2FUUQ7ZJSDGLQNJVOFHXWWYK"
+								address={import.meta.env.VITE_MOCK_CLIENT || ""}
 								onConnect={handleMockConnect}
 							/>
 
 							<MockProfileButton
 								label="Freelancer Profile"
-								address="GDOMDMAKP7YBV7ZRGIKFNC4YSTI5UCLQ5TC63OBK647ONYYRGR43AN6V"
+								address={import.meta.env.VITE_MOCK_FREELANCER || ""}
 								onConnect={handleMockConnect}
 							/>
 
 							<MockProfileButton
 								label="Arbiter Profile"
-								address="GD4WVSE4OFHX2OONSJCTDJ2YZV6SQ2B5CCM3DVJEFE6T6BZ44DGRH3H4"
+								address={import.meta.env.VITE_MOCK_ARBITER || ""}
 								onConnect={handleMockConnect}
 							/>
 						</div>
