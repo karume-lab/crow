@@ -151,12 +151,10 @@ function App() {
 			<main className="max-w-7xl mx-auto px-6 py-10 space-y-10">
 				<div className="flex flex-col space-y-2">
 					<h1 className="text-3xl font-bold tracking-tight text-black">
-						Secure Digital Handshake
+						Fair Play for Freelancers
 					</h1>
 					<p className="text-sm text-[#71717A] max-w-2xl leading-relaxed">
-						Deploy decentralized, multi-actor escrows. Client funds are locked
-						securely within the Soroban ledger environment, with optional
-						arbitration for active dispute resolution.
+						Lock your project funds safely in a smart contract before work begins. When the job is done, the freelancer gets paid automatically. If there's ever a disagreement, a trusted arbiter can step in to resolve it fairly.
 					</p>
 				</div>
 

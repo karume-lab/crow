@@ -23,19 +23,20 @@ export const Header: React.FC<HeaderProps> = ({
 	return (
 		<header className="border-b border-[#E4E4E7] bg-white sticky top-0 z-50">
 			<div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-				<div className="flex items-center space-x-2">
-					<span className="font-semibold text-lg tracking-tight text-black">
-						Secure Handshake
-					</span>
-					<span className="text-[10px] uppercase tracking-wider text-[#71717A] border border-[#E4E4E7] px-2 py-0.5 rounded-full font-mono bg-[#F4F4F5]">
-						dApp
-					</span>
+				<div className="flex items-center space-x-3">
+					<img src="/logo.png" alt="Crow Logo" className="h-8 w-auto" />
+					<div className="flex items-center space-x-2">
+						<span className="font-semibold text-lg tracking-tight text-black">
+							CROW
+						</span>
+					</div>
 				</div>
 
 				<div className="flex items-center space-x-4">
 					{userAddress ? (
 						<div className="flex items-center space-x-3">
-							<button type="button"
+							<button
+								type="button"
 								onClick={() => setShowConnectModal(true)}
 								className="flex flex-col items-end hover:opacity-75 transition text-left cursor-pointer"
 							>
@@ -46,7 +47,8 @@ export const Header: React.FC<HeaderProps> = ({
 									Freighter Wallet
 								</span>
 							</button>
-							<button type="button"
+							<button
+								type="button"
 								onClick={onDisconnect}
 								className="text-xs font-medium text-black border border-[#E4E4E7] px-3 py-1.5 hover:bg-[#F4F4F5] transition duration-150 rounded cursor-pointer"
 							>
@@ -54,7 +56,8 @@ export const Header: React.FC<HeaderProps> = ({
 							</button>
 						</div>
 					) : (
-						<button type="button"
+						<button
+							type="button"
 							onClick={() => setShowConnectModal(true)}
 							className="text-xs font-semibold bg-black text-white hover:bg-zinc-900 transition duration-150 px-4 py-2 rounded cursor-pointer"
 						>
@@ -71,11 +74,13 @@ export const Header: React.FC<HeaderProps> = ({
 							Connect to dApp
 						</h3>
 						<p className="text-xs text-[#71717A] mb-6 leading-relaxed">
-							Select your wallet connector. Ensure you have the Freighter browser extension installed and configured.
+							Select your wallet connector. Ensure you have the Freighter
+							browser extension installed and configured.
 						</p>
 
 						<div className="space-y-4">
-							<button type="button"
+							<button
+								type="button"
 								onClick={() => {
 									onConnect();
 									setShowConnectModal(false);
@@ -101,11 +106,11 @@ export const Header: React.FC<HeaderProps> = ({
 									→
 								</div>
 							</button>
-
 						</div>
 
 						<div className="mt-6 flex justify-end">
-							<button type="button"
+							<button
+								type="button"
 								onClick={() => setShowConnectModal(false)}
 								className="text-xs font-medium text-[#71717A] border border-[#E4E4E7] px-4 py-2 hover:bg-[#F4F4F5] transition rounded cursor-pointer"
 							>
@@ -118,4 +123,3 @@ export const Header: React.FC<HeaderProps> = ({
 		</header>
 	);
 };
-

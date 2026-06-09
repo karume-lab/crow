@@ -109,11 +109,10 @@ export const CreateEscrowView: React.FC<CreateEscrowViewProps> = ({
 		<div className="bg-white border border-[#E4E4E7] p-6 rounded shadow-xs max-w-2xl mx-auto">
 			<div className="mb-6">
 				<h2 className="text-lg font-semibold tracking-tight text-black">
-					Create Escrow Agreement
+					Start a New Project
 				</h2>
 				<p className="text-xs text-[#71717A] mt-1 leading-relaxed">
-					Lock contract funds safely. Standard Stellar tokens (SEP-41) will be
-					held until release or resolution.
+					Safely lock the project payment upfront. The funds stay secure until both sides are happy with the work.
 				</p>
 			</div>
 
@@ -127,7 +126,7 @@ export const CreateEscrowView: React.FC<CreateEscrowViewProps> = ({
 				<div className="grid grid-cols-1 gap-4">
 					<div>
 						<label htmlFor="title" className="block text-[11px] uppercase tracking-wider font-bold text-black mb-1">
-							Agreement Title
+							Project Name
 						</label>
 						<input
 							id="title"
@@ -142,13 +141,13 @@ export const CreateEscrowView: React.FC<CreateEscrowViewProps> = ({
 
 					<div>
 						<label htmlFor="description" className="block text-[11px] uppercase tracking-wider font-bold text-black mb-1">
-							Detailed Scope description
+							Project Details
 						</label>
 						<textarea
 							id="description"
 							value={description}
 							onChange={(e) => setDescription(e.target.value)}
-							placeholder="Provide clean instructions, milestones, and deliverables..."
+							placeholder="What exactly needs to be done? List the goals and milestones here..."
 							className="w-full text-xs border border-[#E4E4E7] px-3 py-2 text-black bg-white focus:outline-hidden focus:border-black rounded font-sans min-h-25"
 							required
 						/>
@@ -255,7 +254,7 @@ export const CreateEscrowView: React.FC<CreateEscrowViewProps> = ({
 							title={!walletInstalled ? "Freighter wallet not installed" : undefined}
 							className="text-xs font-semibold px-5 py-2 rounded transition cursor-pointer text-white bg-black hover:bg-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed"
 						>
-							{contractLoading ? "Executing Ledger Write..." : "Deploy Escrow"}
+							{contractLoading ? "Creating..." : "Lock Funds & Start"}
 						</button>
 					</div>
 				</div>
