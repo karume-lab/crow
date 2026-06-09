@@ -72,6 +72,9 @@ stellar contract bindings typescript \
   --output-dir ../frontend/src/contracts/micro-escrow \
   --overwrite
 
+echo "Restoring README.md to prevent dirty git tree..."
+git checkout -- ../frontend/src/contracts/micro-escrow/README.md > /dev/null 2>&1 || true
+
 echo "Patching TypeScript bindings for Vite compatibility..."
 node -e "
 const fs = require('fs');
