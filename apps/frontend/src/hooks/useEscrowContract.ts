@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Client, type Escrow } from "../contracts/micro-escrow";
-import { getConnectedAddress, isFreighterInstalled } from "../utils/freighter";
+import { getConnectedAddress, isFreighterInstalled, getFreighterWallet } from "../utils/freighter";
 
 const CONTRACT_ID =
 	import.meta.env.VITE_CONTRACT_ID || "CDA7ESCROWCONTRACTID1234567890BCDEF";
@@ -20,14 +20,25 @@ export function useEscrowContract() {
 	const [escrows, setEscrows] = useState<Escrow[]>([]);
 
 	const client = useMemo(
-		() =>
-			new Client({
+		() => {
+			const wallet = getFreighterWallet();
+			return new Client({
 				contractId: CONTRACT_ID,
 				networkPassphrase: NETWORK_PASSPHRASE,
 				rpcUrl: RPC_URL,
 				allowHttp: true,
-			}),
-		[],
+				publicKey: userAddress || undefined,
+				...(wallet && {
+					signTransaction: async (tx: string) => {
+						const signedTxXdr = await wallet.signTransaction(tx, {
+							networkPassphrase: NETWORK_PASSPHRASE,
+						});
+						return { signedTxXdr };
+					},
+				}),
+			});
+		},
+		[userAddress],
 	);
 
 	useEffect(() => {
