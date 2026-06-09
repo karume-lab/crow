@@ -1,5 +1,6 @@
 import type React from "react";
 import { useState } from "react";
+import { Copy, Check } from "lucide-react";
 
 interface HeaderProps {
 	userAddress: string | null;
@@ -117,53 +118,23 @@ export const Header: React.FC<HeaderProps> = ({
 								</span>
 							</div>
 
-							<button type="button"
-								onClick={() =>
-									handleMockConnect(
-										"GACLIENT1234567890ABCDEF1234567890ABCDEF1234567890AB",
-									)
-								}
-								className="w-full text-left px-4 py-3 border border-[#E4E4E7] rounded hover:bg-[#F4F4F5] transition cursor-pointer"
-							>
-								<div className="text-xs font-semibold text-black">
-									Client Profile
-								</div>
-								<div className="text-[10px] text-[#71717A] font-mono">
-									GACLIENT1234567890ABCDEF...
-								</div>
-							</button>
+							<MockProfileButton
+								label="Client Profile"
+								address="GACLIENT1234567890ABCDEF1234567890ABCDEF1234567890AB"
+								onConnect={handleMockConnect}
+							/>
 
-							<button type="button"
-								onClick={() =>
-									handleMockConnect(
-										"GAFREELANCER1234567890ABCDEF1234567890ABCDEF1234567",
-									)
-								}
-								className="w-full text-left px-4 py-3 border border-[#E4E4E7] rounded hover:bg-[#F4F4F5] transition cursor-pointer"
-							>
-								<div className="text-xs font-semibold text-black">
-									Freelancer Profile
-								</div>
-								<div className="text-[10px] text-[#71717A] font-mono">
-									GAFREELANCER1234567890ABC...
-								</div>
-							</button>
+							<MockProfileButton
+								label="Freelancer Profile"
+								address="GAFREELANCER1234567890ABCDEF1234567890ABCDEF1234567"
+								onConnect={handleMockConnect}
+							/>
 
-							<button type="button"
-								onClick={() =>
-									handleMockConnect(
-										"GAARBITER1234567890ABCDEF1234567890ABCDEF1234567890",
-									)
-								}
-								className="w-full text-left px-4 py-3 border border-[#E4E4E7] rounded hover:bg-[#F4F4F5] transition cursor-pointer"
-							>
-								<div className="text-xs font-semibold text-black">
-									Arbiter Profile
-								</div>
-								<div className="text-[10px] text-[#71717A] font-mono">
-									GAARBITER1234567890ABCDEF...
-								</div>
-							</button>
+							<MockProfileButton
+								label="Arbiter Profile"
+								address="GAARBITER1234567890ABCDEF1234567890ABCDEF1234567890"
+								onConnect={handleMockConnect}
+							/>
 						</div>
 
 						<div className="mt-6 flex justify-end">
@@ -178,5 +149,47 @@ export const Header: React.FC<HeaderProps> = ({
 				</div>
 			)}
 		</header>
+	);
+};
+
+const MockProfileButton = ({
+	label,
+	address,
+	onConnect,
+}: {
+	label: string;
+	address: string;
+	onConnect: (address: string) => void;
+}) => {
+	const [copied, setCopied] = useState(false);
+
+	const handleCopy = (e: React.MouseEvent) => {
+		e.stopPropagation();
+		navigator.clipboard.writeText(address);
+		setCopied(true);
+		setTimeout(() => setCopied(false), 2000);
+	};
+
+	return (
+		<div className="w-full flex border border-[#E4E4E7] rounded hover:bg-[#F4F4F5] transition group overflow-hidden">
+			<button
+				type="button"
+				onClick={() => onConnect(address)}
+				className="flex-1 text-left px-4 py-3 cursor-pointer"
+			>
+				<div className="text-xs font-semibold text-black">{label}</div>
+				<div className="text-[10px] text-[#71717A] font-mono">
+					{address.slice(0, 24)}...
+				</div>
+			</button>
+			<button
+				type="button"
+				onClick={handleCopy}
+				className="px-4 flex items-center justify-center text-[#A1A1AA] hover:text-black transition cursor-pointer border-l border-transparent hover:bg-[#E4E4E7]"
+				title="Copy Address"
+			>
+				{copied ? <Check size={14} /> : <Copy size={14} />}
+			</button>
+		</div>
 	);
 };

@@ -24,7 +24,7 @@ export const CopyableAddress = ({ address }: { address: string }) => {
 			<button
 				type="button"
 				onClick={handleCopy}
-				className="text-[#71717A] opacity-0 group-hover:opacity-100 transition hover:text-black cursor-pointer"
+				className="text-[#A1A1AA] hover:text-black transition cursor-pointer"
 				title="Copy Address"
 			>
 				{copied ? <Check size={12} /> : <Copy size={12} />}
