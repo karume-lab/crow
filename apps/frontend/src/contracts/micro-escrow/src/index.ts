@@ -37,8 +37,8 @@ if (typeof window !== "undefined") {
 
 
 export const networks = {
-  standalone: {
-    networkPassphrase: "Standalone Network ; February 2017",
+  testnet: {
+    networkPassphrase: "Test SDF Network ; September 2015",
     contractId: import.meta.env.VITE_CONTRACT_ID as string,
   }
 } as const
