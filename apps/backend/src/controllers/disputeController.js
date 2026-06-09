@@ -1,4 +1,4 @@
-const { query, run } = require('../config/db');
+const { query, run } = require("../config/db");
 
 /**
  * POST /api/escrows/:id/dispute-evidence
@@ -9,42 +9,43 @@ const { query, run } = require('../config/db');
  * deciding how to call resolve_dispute on-chain.
  */
 const submitEvidence = (req, res, next) => {
-    try {
-        const escrowId = parseInt(req.params.id, 10);
+	try {
+		const escrowId = parseInt(req.params.id, 10);
 
-        if (isNaN(escrowId)) {
-            return res.status(400).json({ error: 'Escrow ID must be a number' });
-        }
+		if (Number.isNaN(escrowId)) {
+			return res.status(400).json({ error: "Escrow ID must be a number" });
+		}
 
-        const { sender_address, statement } = req.body;
+		const { sender_address, statement } = req.body;
 
-        if (!sender_address || !statement) {
-            return res.status(400).json({
-                error: 'Missing required fields: sender_address, statement',
-            });
-        }
+		if (!sender_address || !statement) {
+			return res.status(400).json({
+				error: "Missing required fields: sender_address, statement",
+			});
+		}
 
-        // Build a publicly accessible URL for the uploaded file, if one was sent
-        let attachmentUrl = null;
-        if (req.file) {
-            const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3001}`;
-            attachmentUrl = `${baseUrl}/uploads/${req.file.filename}`;
-        }
+		// Build a publicly accessible URL for the uploaded file, if one was sent
+		let attachmentUrl = null;
+		if (req.file) {
+			const baseUrl =
+				process.env.BASE_URL || `http://localhost:${process.env.PORT || 3001}`;
+			attachmentUrl = `${baseUrl}/uploads/${req.file.filename}`;
+		}
 
-        run(
-            `INSERT INTO dispute_submissions (escrow_id, sender, statement, attachment_url)
+		run(
+			`INSERT INTO dispute_submissions (escrow_id, sender, statement, attachment_url)
        VALUES (?, ?, ?, ?)`,
-            [escrowId, sender_address.trim(), statement.trim(), attachmentUrl]
-        );
+			[escrowId, sender_address.trim(), statement.trim(), attachmentUrl],
+		);
 
-        return res.status(202).json({
-            message: 'Evidence submitted successfully',
-            escrow_id: escrowId,
-            attachment_url: attachmentUrl,
-        });
-    } catch (err) {
-        next(err);
-    }
+		return res.status(202).json({
+			message: "Evidence submitted successfully",
+			escrow_id: escrowId,
+			attachment_url: attachmentUrl,
+		});
+	} catch (err) {
+		next(err);
+	}
 };
 
 /**
@@ -55,29 +56,29 @@ const submitEvidence = (req, res, next) => {
  * their resolution decision on-chain.
  */
 const getDisputes = (req, res, next) => {
-    try {
-        const escrowId = parseInt(req.params.id, 10);
+	try {
+		const escrowId = parseInt(req.params.id, 10);
 
-        if (isNaN(escrowId)) {
-            return res.status(400).json({ error: 'Escrow ID must be a number' });
-        }
+		if (Number.isNaN(escrowId)) {
+			return res.status(400).json({ error: "Escrow ID must be a number" });
+		}
 
-        const submissions = query(
-            `SELECT sender, statement, attachment_url, submitted_at
+		const submissions = query(
+			`SELECT sender, statement, attachment_url, submitted_at
        FROM dispute_submissions
        WHERE escrow_id = ?
        ORDER BY submitted_at ASC`,
-            [escrowId]
-        );
+			[escrowId],
+		);
 
-        return res.json({
-            escrow_id: escrowId,
-            dispute_status: submissions.length > 0 ? 'open' : 'none',
-            submissions,
-        });
-    } catch (err) {
-        next(err);
-    }
+		return res.json({
+			escrow_id: escrowId,
+			dispute_status: submissions.length > 0 ? "open" : "none",
+			submissions,
+		});
+	} catch (err) {
+		next(err);
+	}
 };
 
 module.exports = { submitEvidence, getDisputes };

@@ -179,4 +179,14 @@ impl MicroEscrowContract {
         escrow.status = EscrowStatus::Resolved;
         env.storage().persistent().set(&escrow_key, &escrow);
     }
+
+    pub fn counter(env: Env) -> u32 {
+        let counter_key = DataKey::Counter;
+        env.storage().persistent().get(&counter_key).unwrap_or(0)
+    }
+
+    pub fn get_escrow(env: Env, id: u32) -> Option<Escrow> {
+        let escrow_key = DataKey::Escrow(id);
+        env.storage().persistent().get(&escrow_key)
+    }
 }

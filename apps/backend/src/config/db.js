@@ -1,13 +1,14 @@
-const initSqlJs = require('sql.js');
-const path = require('path');
-const fs = require('fs');
+const initSqlJs = require("sql.js");
+const path = require("node:path");
+const fs = require("node:fs");
 
-const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../../data/crow.db');
+const DB_PATH =
+	process.env.DB_PATH || path.join(__dirname, "../../data/crow.db");
 
 // Make sure the data directory exists
 const dataDir = path.dirname(DB_PATH);
 if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
+	fs.mkdirSync(dataDir, { recursive: true });
 }
 
 let db = null;
@@ -18,34 +19,34 @@ let db = null;
  * (in app.js) before the server begins accepting requests.
  */
 async function initDb() {
-    const SQL = await initSqlJs();
+	const SQL = await initSqlJs();
 
-    // If a database file exists on disk, load it; otherwise start fresh
-    if (fs.existsSync(DB_PATH)) {
-        const fileBuffer = fs.readFileSync(DB_PATH);
-        db = new SQL.Database(fileBuffer);
-    } else {
-        db = new SQL.Database();
-    }
+	// If a database file exists on disk, load it; otherwise start fresh
+	if (fs.existsSync(DB_PATH)) {
+		const fileBuffer = fs.readFileSync(DB_PATH);
+		db = new SQL.Database(fileBuffer);
+	} else {
+		db = new SQL.Database();
+	}
 
-    createTables();
+	createTables();
 
-    // Persist the DB to disk on clean process exit
-    process.on('exit', saveDb);
-    process.on('SIGINT', () => {
-        saveDb();
-        process.exit(0);
-    });
-    process.on('SIGTERM', () => {
-        saveDb();
-        process.exit(0);
-    });
+	// Persist the DB to disk on clean process exit
+	process.on("exit", saveDb);
+	process.on("SIGINT", () => {
+		saveDb();
+		process.exit(0);
+	});
+	process.on("SIGTERM", () => {
+		saveDb();
+		process.exit(0);
+	});
 
-    return db;
+	return db;
 }
 
 function createTables() {
-    db.run(`
+	db.run(`
     CREATE TABLE IF NOT EXISTS escrow_metadata (
       escrow_id     INTEGER PRIMARY KEY,
       title         TEXT    NOT NULL,
@@ -55,7 +56,7 @@ function createTables() {
     );
   `);
 
-    db.run(`
+	db.run(`
     CREATE TABLE IF NOT EXISTS dispute_submissions (
       id             INTEGER PRIMARY KEY AUTOINCREMENT,
       escrow_id      INTEGER NOT NULL,
@@ -72,13 +73,13 @@ function createTables() {
  * sql.js works entirely in memory, so we need to flush manually.
  */
 function saveDb() {
-    if (!db) return;
-    try {
-        const data = db.export();
-        fs.writeFileSync(DB_PATH, Buffer.from(data));
-    } catch (err) {
-        console.error('[DB] Failed to save database to disk:', err.message);
-    }
+	if (!db) return;
+	try {
+		const data = db.export();
+		fs.writeFileSync(DB_PATH, Buffer.from(data));
+	} catch (err) {
+		console.error("[DB] Failed to save database to disk:", err.message);
+	}
 }
 
 /**
@@ -87,10 +88,12 @@ function saveDb() {
  * failures are loud rather than silent.
  */
 function getDb() {
-    if (!db) {
-        throw new Error('Database not initialised. Did you call initDb() before starting the server?');
-    }
-    return db;
+	if (!db) {
+		throw new Error(
+			"Database not initialised. Did you call initDb() before starting the server?",
+		);
+	}
+	return db;
 }
 
 /**
@@ -102,39 +105,39 @@ function getDb() {
  *   => [{ escrow_id: 102, title: '...', ... }]
  */
 function query(sql, params = []) {
-    const db = getDb();
-    const stmt = db.prepare(sql);
-    stmt.bind(params);
+	const db = getDb();
+	const stmt = db.prepare(sql);
+	stmt.bind(params);
 
-    const rows = [];
-    while (stmt.step()) {
-        rows.push(stmt.getAsObject());
-    }
-    stmt.free();
+	const rows = [];
+	while (stmt.step()) {
+		rows.push(stmt.getAsObject());
+	}
+	stmt.free();
 
-    // Persist after every write operation
-    if (/^\s*(INSERT|UPDATE|DELETE|CREATE|DROP)/i.test(sql)) {
-        saveDb();
-    }
+	// Persist after every write operation
+	if (/^\s*(INSERT|UPDATE|DELETE|CREATE|DROP)/i.test(sql)) {
+		saveDb();
+	}
 
-    return rows;
+	return rows;
 }
 
 /**
  * Run a statement that doesn't return rows (INSERT, UPDATE, DELETE).
  */
 function run(sql, params = []) {
-    const db = getDb();
-    db.run(sql, params);
-    saveDb();
+	const db = getDb();
+	db.run(sql, params);
+	saveDb();
 }
 
 /**
  * Fetch a single row, or null if nothing matches.
  */
 function queryOne(sql, params = []) {
-    const rows = query(sql, params);
-    return rows.length > 0 ? rows[0] : null;
+	const rows = query(sql, params);
+	return rows.length > 0 ? rows[0] : null;
 }
 
 module.exports = { initDb, getDb, query, run, queryOne, saveDb };
