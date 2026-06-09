@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Toaster, toast } from "sonner";
 import { Header } from "@/components/Header";
 import { useBackendApi } from "@/hooks/useBackendApi";
 import { useEscrowContract } from "@/hooks/useEscrowContract";
@@ -37,15 +38,7 @@ function App() {
 	const [resolveEscrowId, setResolveEscrowId] = useState<number | null>(null);
 	const [resolveTotalAmount, setResolveTotalAmount] = useState<bigint>(0n);
 
-	const [notification, setNotification] = useState<{
-		type: "success" | "error";
-		message: string;
-	} | null>(null);
 
-	const triggerNotification = (type: "success" | "error", message: string) => {
-		setNotification({ type, message });
-		setTimeout(() => setNotification(null), 5000);
-	};
 
 	const handleCreateEscrow = async (args: {
 		title: string;
@@ -66,7 +59,7 @@ function App() {
 		);
 
 		if (escrowId === null) {
-			triggerNotification("error", "Failed to record escrow on-chain.");
+			toast.error("Failed to record escrow on-chain.");
 			return false;
 		}
 
@@ -78,15 +71,13 @@ function App() {
 		);
 
 		if (metadataSaved) {
-			triggerNotification(
-				"success",
+			toast.success(
 				`Escrow #${escrowId} created and metadata synchronized.`,
 			);
 			refreshEscrows();
 			return true;
 		} else {
-			triggerNotification(
-				"error",
+			toast.error(
 				`Escrow #${escrowId} created but metadata sync failed.`,
 			);
 			return true;
@@ -96,10 +87,9 @@ function App() {
 	const handleReleaseFunds = async (escrowId: number): Promise<boolean> => {
 		const success = await releaseFundsOnChain(escrowId);
 		if (success) {
-			triggerNotification("success", `Funds released for Escrow #${escrowId}.`);
+			toast.success(`Funds released for Escrow #${escrowId}.`);
 		} else {
-			triggerNotification(
-				"error",
+			toast.error(
 				`Failed to release funds for Escrow #${escrowId}.`,
 			);
 		}
@@ -109,13 +99,11 @@ function App() {
 	const handleTriggerDispute = async (escrowId: number): Promise<boolean> => {
 		const success = await triggerDisputeOnChain(escrowId);
 		if (success) {
-			triggerNotification(
-				"success",
+			toast.success(
 				`Dispute registered for Escrow #${escrowId}.`,
 			);
 		} else {
-			triggerNotification(
-				"error",
+			toast.error(
 				`Failed to flag dispute for Escrow #${escrowId}.`,
 			);
 		}
@@ -128,13 +116,11 @@ function App() {
 	): Promise<boolean> => {
 		const success = await resolveDisputeOnChain(escrowId, freelancerShare);
 		if (success) {
-			triggerNotification(
-				"success",
+			toast.success(
 				`Dispute resolved for Escrow #${escrowId}.`,
 			);
 		} else {
-			triggerNotification(
-				"error",
+			toast.error(
 				`Failed to resolve dispute for Escrow #${escrowId}.`,
 			);
 		}
@@ -154,6 +140,7 @@ function App() {
 
 	return (
 		<div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
+			<Toaster position="bottom-right" />
 			<Header
 				userAddress={userAddress}
 				walletInstalled={walletInstalled}
@@ -173,17 +160,7 @@ function App() {
 					</p>
 				</div>
 
-				{notification && (
-					<div
-						className={`border p-4 text-xs font-mono rounded ${
-							notification.type === "success"
-								? "bg-zinc-50 border-black text-black"
-								: "bg-zinc-50 border-black text-black font-semibold"
-						}`}
-					>
-						{notification.message}
-					</div>
-				)}
+
 
 				{combinedError && (
 					<div className="bg-zinc-50 border border-black p-4 text-xs font-mono text-black">
