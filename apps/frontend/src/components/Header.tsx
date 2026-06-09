@@ -42,15 +42,18 @@ export const Header: React.FC<HeaderProps> = ({
 				<div className="flex items-center space-x-4">
 					{userAddress ? (
 						<div className="flex items-center space-x-3">
-							<div className="flex flex-col items-end">
+							<button type="button"
+								onClick={() => setShowConnectModal(true)}
+								className="flex flex-col items-end hover:opacity-75 transition text-left cursor-pointer"
+							>
 								<span className="text-sm font-mono text-black font-medium">
 									{formatAddress(userAddress)}
 								</span>
 								<span className="text-[10px] text-[#71717A]">
 									{isSimulated ? "Simulated Wallet" : "Freighter Wallet"}
 								</span>
-							</div>
-							<button
+							</button>
+							<button type="button"
 								onClick={onDisconnect}
 								className="text-xs font-medium text-black border border-[#E4E4E7] px-3 py-1.5 hover:bg-[#F4F4F5] transition duration-150 rounded cursor-pointer"
 							>
@@ -58,7 +61,7 @@ export const Header: React.FC<HeaderProps> = ({
 							</button>
 						</div>
 					) : (
-						<button
+						<button type="button"
 							onClick={() => setShowConnectModal(true)}
 							className="text-xs font-semibold bg-black text-white hover:bg-zinc-900 transition duration-150 px-4 py-2 rounded cursor-pointer"
 						>
@@ -81,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({
 						</p>
 
 						<div className="space-y-4">
-							<button
+							<button type="button"
 								onClick={() => {
 									onConnect();
 									setShowConnectModal(false);
@@ -114,7 +117,7 @@ export const Header: React.FC<HeaderProps> = ({
 								</span>
 							</div>
 
-							<button
+							<button type="button"
 								onClick={() =>
 									handleMockConnect(
 										"GACLIENT1234567890ABCDEF1234567890ABCDEF1234567890AB",
@@ -130,7 +133,7 @@ export const Header: React.FC<HeaderProps> = ({
 								</div>
 							</button>
 
-							<button
+							<button type="button"
 								onClick={() =>
 									handleMockConnect(
 										"GAFREELANCER1234567890ABCDEF1234567890ABCDEF1234567",
@@ -146,7 +149,7 @@ export const Header: React.FC<HeaderProps> = ({
 								</div>
 							</button>
 
-							<button
+							<button type="button"
 								onClick={() =>
 									handleMockConnect(
 										"GAARBITER1234567890ABCDEF1234567890ABCDEF1234567890",
@@ -164,7 +167,7 @@ export const Header: React.FC<HeaderProps> = ({
 						</div>
 
 						<div className="mt-6 flex justify-end">
-							<button
+							<button type="button"
 								onClick={() => setShowConnectModal(false)}
 								className="text-xs font-medium text-[#71717A] border border-[#E4E4E7] px-4 py-2 hover:bg-[#F4F4F5] transition rounded cursor-pointer"
 							>

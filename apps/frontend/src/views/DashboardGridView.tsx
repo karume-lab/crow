@@ -1,6 +1,37 @@
 import { useEffect, useState } from "react";
+import { Copy, Check } from "lucide-react";
 import type { Escrow, EscrowStatus } from "../contracts/micro-escrow";
 import type { EscrowDossier } from "../hooks/useBackendApi";
+
+export const CopyableAddress = ({ address }: { address: string }) => {
+	const [copied, setCopied] = useState(false);
+
+	const formatAddress = (addr: string) => {
+		return `${addr.slice(0, 8)}...${addr.slice(-6)}`;
+	};
+
+	const handleCopy = () => {
+		navigator.clipboard.writeText(address);
+		setCopied(true);
+		setTimeout(() => setCopied(false), 2000);
+	};
+
+	return (
+		<div className="flex items-center gap-1.5 mt-0.5 group">
+			<span className="text-black font-mono font-medium" title={address}>
+				{formatAddress(address)}
+			</span>
+			<button
+				type="button"
+				onClick={handleCopy}
+				className="text-[#71717A] opacity-0 group-hover:opacity-100 transition hover:text-black cursor-pointer"
+				title="Copy Address"
+			>
+				{copied ? <Check size={12} /> : <Copy size={12} />}
+			</button>
+		</div>
+	);
+};
 
 interface DashboardGridViewProps {
 	escrows: Escrow[];
@@ -219,45 +250,25 @@ const EscrowCard = ({
 						<span className="text-[#71717A] block font-mono uppercase text-[9px] tracking-wider">
 							Client
 						</span>
-						<span
-							className="text-black font-mono font-medium block mt-0.5"
-							title={escrow.client}
-						>
-							{formatAddress(escrow.client)}
-						</span>
+						<CopyableAddress address={escrow.client} />
 					</div>
 					<div>
 						<span className="text-[#71717A] block font-mono uppercase text-[9px] tracking-wider">
 							Freelancer
 						</span>
-						<span
-							className="text-black font-mono font-medium block mt-0.5"
-							title={escrow.freelancer}
-						>
-							{formatAddress(escrow.freelancer)}
-						</span>
+						<CopyableAddress address={escrow.freelancer} />
 					</div>
 					<div>
 						<span className="text-[#71717A] block font-mono uppercase text-[9px] tracking-wider">
 							Arbiter
 						</span>
-						<span
-							className="text-black font-mono font-medium block mt-0.5"
-							title={escrow.arbiter}
-						>
-							{formatAddress(escrow.arbiter)}
-						</span>
+						<CopyableAddress address={escrow.arbiter} />
 					</div>
 					<div>
 						<span className="text-[#71717A] block font-mono uppercase text-[9px] tracking-wider">
 							Contract Token
 						</span>
-						<span
-							className="text-black font-mono font-medium block mt-0.5"
-							title={escrow.token}
-						>
-							{formatAddress(escrow.token)}
-						</span>
+						<CopyableAddress address={escrow.token} />
 					</div>
 				</div>
 			</div>

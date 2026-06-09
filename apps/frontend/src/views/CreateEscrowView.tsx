@@ -43,8 +43,8 @@ export const CreateEscrowView: React.FC<CreateEscrowViewProps> = ({
 		try {
 			await new Promise((resolve) => setTimeout(resolve, 1000));
 			setApprovalRequired(false);
-		} catch (err: any) {
-			setTxError(err.message || "Token approval transaction failed.");
+		} catch (err) {
+			setTxError(err instanceof Error ? err.message : "Token approval transaction failed.");
 		} finally {
 			setIsApproving(false);
 		}
@@ -124,10 +124,11 @@ export const CreateEscrowView: React.FC<CreateEscrowViewProps> = ({
 
 				<div className="grid grid-cols-1 gap-4">
 					<div>
-						<label className="block text-[11px] uppercase tracking-wider font-bold text-black mb-1">
+						<label htmlFor="title" className="block text-[11px] uppercase tracking-wider font-bold text-black mb-1">
 							Agreement Title
 						</label>
 						<input
+							id="title"
 							type="text"
 							value={title}
 							onChange={(e) => setTitle(e.target.value)}
@@ -138,10 +139,11 @@ export const CreateEscrowView: React.FC<CreateEscrowViewProps> = ({
 					</div>
 
 					<div>
-						<label className="block text-[11px] uppercase tracking-wider font-bold text-black mb-1">
+						<label htmlFor="description" className="block text-[11px] uppercase tracking-wider font-bold text-black mb-1">
 							Detailed Scope description
 						</label>
 						<textarea
+							id="description"
 							value={description}
 							onChange={(e) => setDescription(e.target.value)}
 							placeholder="Provide clean instructions, milestones, and deliverables..."
@@ -151,11 +153,12 @@ export const CreateEscrowView: React.FC<CreateEscrowViewProps> = ({
 					</div>
 
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-						<div>
-							<label className="block text-[11px] uppercase tracking-wider font-bold text-black mb-1">
+						<div className="flex flex-col justify-end h-full">
+							<label htmlFor="freelancer" className="block text-[11px] uppercase tracking-wider font-bold text-black mb-1">
 								Freelancer Address
 							</label>
 							<input
+								id="freelancer"
 								type="text"
 								value={freelancer}
 								onChange={(e) => setFreelancer(e.target.value)}
@@ -165,11 +168,12 @@ export const CreateEscrowView: React.FC<CreateEscrowViewProps> = ({
 							/>
 						</div>
 
-						<div>
-							<label className="block text-[11px] uppercase tracking-wider font-bold text-black mb-1">
+						<div className="flex flex-col justify-end h-full">
+							<label htmlFor="arbiter" className="block text-[11px] uppercase tracking-wider font-bold text-black mb-1">
 								Designated Arbiter Address
 							</label>
 							<input
+								id="arbiter"
 								type="text"
 								value={arbiter}
 								onChange={(e) => setArbiter(e.target.value)}
@@ -181,11 +185,12 @@ export const CreateEscrowView: React.FC<CreateEscrowViewProps> = ({
 					</div>
 
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-						<div>
-							<label className="block text-[11px] uppercase tracking-wider font-bold text-black mb-1">
+						<div className="flex flex-col justify-end h-full">
+							<label htmlFor="token" className="block text-[11px] uppercase tracking-wider font-bold text-black mb-1">
 								Token Contract (SEP-41)
 							</label>
 							<input
+								id="token"
 								type="text"
 								value={token}
 								onChange={(e) => setToken(e.target.value)}
@@ -195,11 +200,12 @@ export const CreateEscrowView: React.FC<CreateEscrowViewProps> = ({
 							/>
 						</div>
 
-						<div>
-							<label className="block text-[11px] uppercase tracking-wider font-bold text-black mb-1">
+						<div className="flex flex-col justify-end h-full">
+							<label htmlFor="amount" className="block text-[11px] uppercase tracking-wider font-bold text-black mb-1">
 								Locked Amount
 							</label>
 							<input
+								id="amount"
 								type="number"
 								value={amount}
 								onChange={(e) => {
