@@ -3,6 +3,8 @@ import { useState } from "react";
 
 interface CreateEscrowViewProps {
 	userAddress: string | null;
+	isSimulated: boolean;
+	walletInstalled: boolean;
 	onCreateEscrow: (args: {
 		title: string;
 		description: string;
@@ -16,6 +18,8 @@ interface CreateEscrowViewProps {
 
 export const CreateEscrowView: React.FC<CreateEscrowViewProps> = ({
 	userAddress,
+	isSimulated,
+	walletInstalled,
 	onCreateEscrow,
 	loading: contractLoading,
 }) => {
@@ -249,7 +253,8 @@ export const CreateEscrowView: React.FC<CreateEscrowViewProps> = ({
 
 						<button
 							type="submit"
-							disabled={approvalRequired || contractLoading || isApproving}
+							disabled={approvalRequired || contractLoading || isApproving || isSimulated || !walletInstalled}
+							title={isSimulated ? "Connect a real Freighter wallet to deploy on-chain" : (!walletInstalled ? "Freighter wallet not installed" : undefined)}
 							className="text-xs font-semibold px-5 py-2 rounded transition cursor-pointer text-white bg-black hover:bg-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed"
 						>
 							{contractLoading ? "Executing Ledger Write..." : "Deploy Escrow"}

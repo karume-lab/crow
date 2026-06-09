@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Client, type Escrow } from "@/contracts/micro-escrow";
-import { getConnectedAddress, isFreighterInstalled, getFreighterWallet } from "@/utils/freighter";
+import { getConnectedAddress, getFreighterWallet, isFreighterInstalled } from "@/utils/freighter";
 
 const CONTRACT_ID =
 	import.meta.env.VITE_CONTRACT_ID || "CDA7ESCROWCONTRACTID1234567890BCDEF";
@@ -19,6 +19,8 @@ export function useEscrowContract() {
 	const [error, setError] = useState<string | null>(null);
 	const [escrows, setEscrows] = useState<Escrow[]>([]);
 
+
+
 	const client = useMemo(
 		() => {
 			const wallet = getFreighterWallet();
@@ -28,20 +30,21 @@ export function useEscrowContract() {
 				rpcUrl: RPC_URL,
 				allowHttp: true,
 				publicKey: userAddress || undefined,
-				...(wallet && userAddress && !isSimulated && {
-					signTransaction: async (txXdr: string) => {
-						// 1. Freighter signs it and returns a raw string
-						const signedString = await wallet.signTransaction(txXdr, {
-							networkPassphrase: NETWORK_PASSPHRASE,
-							network: "STANDALONE", 
-						});
-						// 2. Wrap that string in the specific object structure the SDK demands
-						return { signedTxXdr: signedString };
-					},
-				}),
+				signTransaction: async (txXdr: string) => {
+					if (!wallet) {
+						throw new Error("Cannot sign: wallet not connected");
+					}
+					// 1. Freighter signs it and returns a raw string
+					const signedString = await wallet.signTransaction(txXdr, {
+						networkPassphrase: NETWORK_PASSPHRASE,
+						network: "STANDALONE", 
+					});
+					// 2. Wrap that string in the specific object structure the SDK demands
+					return { signedTxXdr: signedString };
+				},
 			});
 		},
-		[userAddress, isSimulated],
+		[userAddress], // still re-create when userAddress changes so publicKey is current
 	);
 
 	useEffect(() => {
@@ -144,6 +147,10 @@ export function useEscrowContract() {
 				setError("Wallet not connected");
 				return null;
 			}
+			if (isSimulated) {
+				setError("Cannot deploy on-chain in simulated/demo mode. Please connect a real Freighter wallet.");
+				return null;
+			}
 			setLoading(true);
 			setError(null);
 			try {
@@ -168,11 +175,15 @@ export function useEscrowContract() {
 				setLoading(false);
 			}
 		},
-		[client, userAddress, refreshEscrows],
+		[client, userAddress, isSimulated, refreshEscrows],
 	);
 
 	const releaseFundsOnChain = useCallback(
 		async (escrowId: number): Promise<boolean> => {
+			if (isSimulated) {
+				setError("Cannot release funds on-chain in simulated/demo mode. Please connect a real Freighter wallet.");
+				return false;
+			}
 			setLoading(true);
 			setError(null);
 			try {
@@ -191,13 +202,17 @@ export function useEscrowContract() {
 				setLoading(false);
 			}
 		},
-		[client, refreshEscrows],
+		[client, isSimulated, refreshEscrows],
 	);
 
 	const triggerDisputeOnChain = useCallback(
 		async (escrowId: number): Promise<boolean> => {
 			if (!userAddress) {
 				setError("Wallet not connected");
+				return false;
+			}
+			if (isSimulated) {
+				setError("Cannot trigger dispute on-chain in simulated/demo mode. Please connect a real Freighter wallet.");
 				return false;
 			}
 			setLoading(true);
@@ -213,11 +228,15 @@ export function useEscrowContract() {
 				setLoading(false);
 			}
 		},
-		[client, userAddress, refreshEscrows],
+		[client, userAddress, isSimulated, refreshEscrows],
 	);
 
 	const resolveDisputeOnChain = useCallback(
 		async (escrowId: number, freelancerShare: bigint): Promise<boolean> => {
+			if (isSimulated) {
+				setError("Cannot resolve dispute on-chain in simulated/demo mode. Please connect a real Freighter wallet.");
+				return false;
+			}
 			setLoading(true);
 			setError(null);
 			try {
@@ -239,7 +258,7 @@ export function useEscrowContract() {
 				setLoading(false);
 			}
 		},
-		[client, refreshEscrows],
+		[client, isSimulated, refreshEscrows],
 	);
 
 	return {

@@ -201,6 +201,8 @@ function App() {
 						<div className="sticky top-24">
 							<CreateEscrowView
 								userAddress={userAddress}
+								isSimulated={isSimulated}
+								walletInstalled={walletInstalled}
 								onCreateEscrow={handleCreateEscrow}
 								loading={contractLoading || apiLoading}
 							/>
