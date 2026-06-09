@@ -7,6 +7,15 @@ echo "Wiping Docker node..."
 docker rm -f crow-stellar-standalone > /dev/null 2>&1
 docker compose up -d
 
+echo "Waiting for Docker node (Soroban RPC) to initialize..."
+until $(curl -s -f -o /dev/null -X POST -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","method":"getHealth","params":[],"id":1}' \
+  http://localhost:8000/soroban/rpc); do
+    printf '.'
+    sleep 2
+done
+echo "RPC engine is online!"
+
 # 2. Reset CLI Network configuration
 echo "Resetting CLI networks..."
 stellar network rm standalone > /dev/null 2>&1
@@ -22,14 +31,27 @@ rm -rf apps/backend/uploads/*
 
 # 4. Clear Frontend LocalStorage
 echo "Please clear your browser cache/storage for localhost:5173"
-echo "   (Or run: localStorage.clear() in your browser console)"
+echo "  (Or run: localStorage.clear() in your browser console)"
 
 echo "Environment reset successfully."
 
 echo "Automatically running final re-init steps..."
 
-# A. Fund your fresh deployer
-stellar keys generate dev_deployer --network standalone --fund
+# A. Fund your fresh deployer directly via local Friendbot API
+echo "Generating dev_deployer keys..."
+stellar keys rm --force dev_deployer > /dev/null 2>&1 || true
+stellar keys generate dev_deployer > /dev/null 2>&1
+DEV_ADDRESS=$(stellar keys address dev_deployer)
+
+echo "Funding dev_deployer ($DEV_ADDRESS) via local Friendbot..."
+# Loop until Friendbot actually succeeds (returns HTTP 200)
+while ! curl -s -f "http://localhost:8000/friendbot?addr=$DEV_ADDRESS" > /dev/null; do
+  echo "Friendbot is still booting. Retrying in 3 seconds..."
+  sleep 3
+done
+
+echo "Funding transaction submitted! Waiting 3 seconds for ledger close..."
+sleep 3
 
 # B. Redeploy the contract
 cd apps/contract
@@ -40,21 +62,36 @@ CONTRACT_ID=$(stellar contract deploy \
   --network standalone \
   --alias docker_escrow)
 
-# C. Refresh your bindings
+echo "Contract deployed with ID: $CONTRACT_ID"
+
+# C. Refresh your bindings (with --overwrite)
+echo "Generating TypeScript bindings..."
 stellar contract bindings typescript \
   --network standalone \
   --id docker_escrow \
-  --output-dir ../frontend/src/contracts/micro-escrow
+  --output-dir ../frontend/src/contracts/micro-escrow \
+  --overwrite
 
 # D. Generate and fund mock profiles for testing
 echo "Generating mock profiles..."
-stellar keys generate mock_client --network standalone --fund > /dev/null 2>&1 || true
-stellar keys generate mock_freelancer --network standalone > /dev/null 2>&1 || true
-stellar keys generate mock_arbiter --network standalone > /dev/null 2>&1 || true
+stellar keys rm --force mock_client > /dev/null 2>&1 || true
+stellar keys rm --force mock_freelancer > /dev/null 2>&1 || true
+stellar keys rm --force mock_arbiter > /dev/null 2>&1 || true
+
+stellar keys generate mock_client > /dev/null 2>&1
+stellar keys generate mock_freelancer > /dev/null 2>&1
+stellar keys generate mock_arbiter > /dev/null 2>&1
 
 MOCK_CLIENT=$(stellar keys address mock_client)
 MOCK_FREELANCER=$(stellar keys address mock_freelancer)
 MOCK_ARBITER=$(stellar keys address mock_arbiter)
+
+echo "Funding mock_client ($MOCK_CLIENT) via local Friendbot..."
+while ! curl -s -f "http://localhost:8000/friendbot?addr=$MOCK_CLIENT" > /dev/null; do
+  echo "Friendbot retry..."
+  sleep 2
+done
+
 TOKEN_ID=$(stellar contract id asset --asset native --network standalone)
 
 echo "Writing environment variables to apps/frontend/.env..."
