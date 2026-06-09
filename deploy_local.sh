@@ -137,6 +137,18 @@ while ! curl -s -f "http://localhost:8000/friendbot?addr=$MOCK_CLIENT" > /dev/nu
   sleep 2
 done
 
+echo "Funding mock_freelancer ($MOCK_FREELANCER) via local Friendbot..."
+while ! curl -s -f "http://localhost:8000/friendbot?addr=$MOCK_FREELANCER" > /dev/null; do
+  echo "Friendbot retry..."
+  sleep 2
+done
+
+echo "Funding mock_arbiter ($MOCK_ARBITER) via local Friendbot..."
+while ! curl -s -f "http://localhost:8000/friendbot?addr=$MOCK_ARBITER" > /dev/null; do
+  echo "Friendbot retry..."
+  sleep 2
+done
+
 echo "Deploying Native XLM token wrapper..."
 stellar contract asset deploy --asset native --source-account dev_deployer --network standalone > /dev/null 2>&1 || true
 TOKEN_ID=$(stellar contract id asset --asset native --network standalone)
