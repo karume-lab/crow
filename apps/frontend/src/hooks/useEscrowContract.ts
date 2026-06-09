@@ -14,7 +14,6 @@ export function useEscrowContract() {
 	const [walletInstalled, setWalletInstalled] = useState(false);
 	const [userAddress, setUserAddress] = useState<string | null>(null);
 	const [isConnecting, setIsConnecting] = useState(false);
-	const [isSimulated, setIsSimulated] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [escrows, setEscrows] = useState<Escrow[]>([]);
@@ -52,13 +51,10 @@ export function useEscrowContract() {
 		getConnectedAddress().then((address) => {
 			if (address) {
 				setUserAddress(address);
-				setIsSimulated(false);
 			} else {
 				const cached = localStorage.getItem("crow_user_address");
-				const cachedSim = localStorage.getItem("crow_is_simulated");
 				if (cached) {
 					setUserAddress(cached);
-					setIsSimulated(cachedSim === "true");
 				}
 			}
 		});
@@ -102,25 +98,16 @@ export function useEscrowContract() {
 		};
 	}, [refreshEscrows]);
 
-	const connectWallet = useCallback(async (simulatedAddress?: string) => {
+	const connectWallet = useCallback(async () => {
 		setIsConnecting(true);
 		setError(null);
 		try {
-			if (simulatedAddress) {
-				setUserAddress(simulatedAddress);
-				setIsSimulated(true);
-				localStorage.setItem("crow_user_address", simulatedAddress);
-				localStorage.setItem("crow_is_simulated", "true");
+			const address = await getConnectedAddress();
+			if (address) {
+				setUserAddress(address);
+				localStorage.setItem("crow_user_address", address);
 			} else {
-				const address = await getConnectedAddress();
-				if (address) {
-					setUserAddress(address);
-					setIsSimulated(false);
-					localStorage.setItem("crow_user_address", address);
-					localStorage.setItem("crow_is_simulated", "false");
-				} else {
-					throw new Error("Freighter wallet not found or connection rejected");
-				}
+				throw new Error("Freighter wallet not found or connection rejected");
 			}
 		} catch (err: unknown) {
 			setError(err instanceof Error ? err.message : "Connection failed");
@@ -131,9 +118,7 @@ export function useEscrowContract() {
 
 	const disconnectWallet = useCallback(() => {
 		setUserAddress(null);
-		setIsSimulated(false);
 		localStorage.removeItem("crow_user_address");
-		localStorage.removeItem("crow_is_simulated");
 	}, []);
 
 	const createEscrowOnChain = useCallback(
@@ -145,10 +130,6 @@ export function useEscrowContract() {
 		): Promise<number | null> => {
 			if (!userAddress) {
 				setError("Wallet not connected");
-				return null;
-			}
-			if (isSimulated) {
-				setError("Cannot deploy on-chain in simulated/demo mode. Please connect a real Freighter wallet.");
 				return null;
 			}
 			setLoading(true);
@@ -175,15 +156,11 @@ export function useEscrowContract() {
 				setLoading(false);
 			}
 		},
-		[client, userAddress, isSimulated, refreshEscrows],
+		[client, userAddress, refreshEscrows],
 	);
 
 	const releaseFundsOnChain = useCallback(
 		async (escrowId: number): Promise<boolean> => {
-			if (isSimulated) {
-				setError("Cannot release funds on-chain in simulated/demo mode. Please connect a real Freighter wallet.");
-				return false;
-			}
 			setLoading(true);
 			setError(null);
 			try {
@@ -202,17 +179,13 @@ export function useEscrowContract() {
 				setLoading(false);
 			}
 		},
-		[client, isSimulated, refreshEscrows],
+		[client, refreshEscrows],
 	);
 
 	const triggerDisputeOnChain = useCallback(
 		async (escrowId: number): Promise<boolean> => {
 			if (!userAddress) {
 				setError("Wallet not connected");
-				return false;
-			}
-			if (isSimulated) {
-				setError("Cannot trigger dispute on-chain in simulated/demo mode. Please connect a real Freighter wallet.");
 				return false;
 			}
 			setLoading(true);
@@ -228,15 +201,11 @@ export function useEscrowContract() {
 				setLoading(false);
 			}
 		},
-		[client, userAddress, isSimulated, refreshEscrows],
+		[client, userAddress, refreshEscrows],
 	);
 
 	const resolveDisputeOnChain = useCallback(
 		async (escrowId: number, freelancerShare: bigint): Promise<boolean> => {
-			if (isSimulated) {
-				setError("Cannot resolve dispute on-chain in simulated/demo mode. Please connect a real Freighter wallet.");
-				return false;
-			}
 			setLoading(true);
 			setError(null);
 			try {
@@ -258,14 +227,13 @@ export function useEscrowContract() {
 				setLoading(false);
 			}
 		},
-		[client, isSimulated, refreshEscrows],
+		[client, refreshEscrows],
 	);
 
 	return {
 		walletInstalled,
 		userAddress,
 		isConnecting,
-		isSimulated,
 		loading,
 		error,
 		escrows,

@@ -11,7 +11,6 @@ function App() {
 	const {
 		walletInstalled,
 		userAddress,
-		isSimulated,
 		loading: contractLoading,
 		error: contractError,
 		escrows,
@@ -157,7 +156,6 @@ function App() {
 		<div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
 			<Header
 				userAddress={userAddress}
-				isSimulated={isSimulated}
 				walletInstalled={walletInstalled}
 				onConnect={connectWallet}
 				onDisconnect={disconnectWallet}
@@ -201,7 +199,6 @@ function App() {
 						<div className="sticky top-24">
 							<CreateEscrowView
 								userAddress={userAddress}
-								isSimulated={isSimulated}
 								walletInstalled={walletInstalled}
 								onCreateEscrow={handleCreateEscrow}
 								loading={contractLoading || apiLoading}

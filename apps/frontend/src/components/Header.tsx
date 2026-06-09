@@ -1,18 +1,15 @@
 import type React from "react";
 import { useState } from "react";
-import { Copy, Check } from "lucide-react";
 
 interface HeaderProps {
 	userAddress: string | null;
-	isSimulated: boolean;
 	walletInstalled: boolean;
-	onConnect: (mockAddress?: string) => void;
+	onConnect: () => void;
 	onDisconnect: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
 	userAddress,
-	isSimulated,
 	walletInstalled,
 	onConnect,
 	onDisconnect,
@@ -21,11 +18,6 @@ export const Header: React.FC<HeaderProps> = ({
 
 	const formatAddress = (addr: string) => {
 		return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
-	};
-
-	const handleMockConnect = (roleAddress: string) => {
-		onConnect(roleAddress);
-		setShowConnectModal(false);
 	};
 
 	return (
@@ -51,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
 									{formatAddress(userAddress)}
 								</span>
 								<span className="text-[10px] text-[#71717A]">
-									{isSimulated ? "Simulated Wallet" : "Freighter Wallet"}
+									Freighter Wallet
 								</span>
 							</button>
 							<button type="button"
@@ -79,9 +71,7 @@ export const Header: React.FC<HeaderProps> = ({
 							Connect to dApp
 						</h3>
 						<p className="text-xs text-[#71717A] mb-6 leading-relaxed">
-							Select your wallet connector. You can use Freighter Wallet if
-							installed, or select a simulated profile to test the application
-							immediately.
+							Select your wallet connector. Ensure you have the Freighter browser extension installed and configured.
 						</p>
 
 						<div className="space-y-4">
@@ -111,29 +101,7 @@ export const Header: React.FC<HeaderProps> = ({
 									→
 								</div>
 							</button>
-							<div className="border-t border-[#E4E4E7] my-4 pt-4">
-								<span className="text-[10px] uppercase font-bold tracking-wider text-[#71717A]">
-									Simulated Local Profiles
-								</span>
-							</div>
 
-							<MockProfileButton
-								label="Client Profile"
-								address={import.meta.env.VITE_MOCK_CLIENT || ""}
-								onConnect={handleMockConnect}
-							/>
-
-							<MockProfileButton
-								label="Freelancer Profile"
-								address={import.meta.env.VITE_MOCK_FREELANCER || ""}
-								onConnect={handleMockConnect}
-							/>
-
-							<MockProfileButton
-								label="Arbiter Profile"
-								address={import.meta.env.VITE_MOCK_ARBITER || ""}
-								onConnect={handleMockConnect}
-							/>
 						</div>
 
 						<div className="mt-6 flex justify-end">
@@ -151,44 +119,3 @@ export const Header: React.FC<HeaderProps> = ({
 	);
 };
 
-const MockProfileButton = ({
-	label,
-	address,
-	onConnect,
-}: {
-	label: string;
-	address: string;
-	onConnect: (address: string) => void;
-}) => {
-	const [copied, setCopied] = useState(false);
-
-	const handleCopy = (e: React.MouseEvent) => {
-		e.stopPropagation();
-		navigator.clipboard.writeText(address);
-		setCopied(true);
-		setTimeout(() => setCopied(false), 2000);
-	};
-
-	return (
-		<div className="w-full flex border border-[#E4E4E7] rounded hover:bg-[#F4F4F5] transition group overflow-hidden">
-			<button
-				type="button"
-				onClick={() => onConnect(address)}
-				className="flex-1 text-left px-4 py-3 cursor-pointer"
-			>
-				<div className="text-xs font-semibold text-black">{label}</div>
-				<div className="text-[10px] text-[#71717A] font-mono">
-					{address.slice(0, 24)}...
-				</div>
-			</button>
-			<button
-				type="button"
-				onClick={handleCopy}
-				className="px-4 flex items-center justify-center text-[#A1A1AA] hover:text-black transition cursor-pointer border-l border-transparent hover:bg-[#E4E4E7]"
-				title="Copy Address"
-			>
-				{copied ? <Check size={14} /> : <Copy size={14} />}
-			</button>
-		</div>
-	);
-};
