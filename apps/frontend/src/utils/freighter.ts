@@ -1,3 +1,9 @@
+import {
+	isConnected as apiIsConnected,
+	requestAccess as apiRequestAccess,
+	signTransaction as apiSignTransaction,
+} from "@stellar/freighter-api";
+
 export interface Freighter {
 	isConnected: () => Promise<boolean>;
 	getPublicKey: () => Promise<string>;
@@ -7,38 +13,43 @@ export interface Freighter {
 	) => Promise<string>;
 }
 
-declare global {
-	interface Window {
-		freighter?: Freighter;
-	}
-}
-
-export const getFreighterWallet = (): Freighter | null => {
-	if (typeof window !== "undefined" && window.freighter) {
-		return window.freighter;
-	}
-	return null;
-};
-
 export const isFreighterInstalled = async (): Promise<boolean> => {
-	const wallet = getFreighterWallet();
-	if (!wallet) return false;
-	try {
-		return await wallet.isConnected();
-	} catch {
-		return false;
-	}
+	const res = await apiIsConnected();
+	return res.isConnected;
 };
 
 export const getConnectedAddress = async (): Promise<string | null> => {
-	const wallet = getFreighterWallet();
-	if (!wallet) return null;
 	try {
-		const isConnected = await wallet.isConnected();
-		if (!isConnected) return null;
-		return await wallet.getPublicKey();
+		const installed = await isFreighterInstalled();
+		if (!installed) return null;
+
+		const res = await apiRequestAccess();
+		if (res.error) {
+			console.error("Freighter access error:", res.error);
+			return null;
+		}
+		return res.address || null;
 	} catch (err) {
 		console.error("Failed to get public key from Freighter:", err);
 		return null;
 	}
+};
+
+export const getFreighterWallet = (): Freighter | null => {
+	return {
+		isConnected: async () => {
+			const res = await apiIsConnected();
+			return res.isConnected;
+		},
+		getPublicKey: async () => {
+			const res = await apiRequestAccess();
+			if (res.error) throw new Error(res.error);
+			return res.address;
+		},
+		signTransaction: async (xdr: string, opts?: { network?: string; networkPassphrase?: string }) => {
+			const res = await apiSignTransaction(xdr, { networkPassphrase: opts?.networkPassphrase });
+			if (res.error) throw new Error(res.error);
+			return res.signedTxXdr;
+		},
+	};
 };
