@@ -12,7 +12,12 @@ const RPC_URL =
 
 export function useEscrowContract() {
 	const [walletInstalled, setWalletInstalled] = useState(false);
-	const [userAddress, setUserAddress] = useState<string | null>(null);
+	const [userAddress, setUserAddress] = useState<string | null>(() => {
+		if (typeof window !== "undefined") {
+			return localStorage.getItem("crow_user_address");
+		}
+		return null;
+	});
 	const [isConnecting, setIsConnecting] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -48,16 +53,19 @@ export function useEscrowContract() {
 
 	useEffect(() => {
 		isFreighterInstalled().then(setWalletInstalled);
-		getConnectedAddress().then((address) => {
-			if (address) {
-				setUserAddress(address);
-			} else {
-				const cached = localStorage.getItem("crow_user_address");
-				if (cached) {
-					setUserAddress(cached);
+		
+		const cached = localStorage.getItem("crow_user_address");
+		if (cached) {
+			getConnectedAddress().then((address) => {
+				if (address && address !== cached) {
+					setUserAddress(address);
+					localStorage.setItem("crow_user_address", address);
+				} else if (!address) {
+					setUserAddress(null);
+					localStorage.removeItem("crow_user_address");
 				}
-			}
-		});
+			});
+		}
 	}, []);
 
 	const refreshEscrows = useCallback(async () => {
