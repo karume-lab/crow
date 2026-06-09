@@ -72,6 +72,12 @@ stellar contract bindings typescript \
   --output-dir ../frontend/src/contracts/micro-escrow \
   --overwrite
 
+echo "Building TypeScript bindings..."
+cd ../frontend/src/contracts/micro-escrow
+bun install > /dev/null 2>&1
+bun run build > /dev/null 2>&1
+cd - > /dev/null
+
 # D. Generate and fund mock profiles for testing
 echo "Generating mock profiles..."
 stellar keys rm --force mock_client > /dev/null 2>&1 || true
