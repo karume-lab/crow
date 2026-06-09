@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Copy, Check } from "lucide-react";
-import type { Escrow, EscrowStatus } from "../contracts/micro-escrow";
-import type { EscrowDossier } from "../hooks/useBackendApi";
+import type { Escrow, EscrowStatus } from "@/contracts/micro-escrow";
+import type { EscrowDossier } from "@/hooks/useBackendApi";
 
 export const CopyableAddress = ({ address }: { address: string }) => {
 	const [copied, setCopied] = useState(false);

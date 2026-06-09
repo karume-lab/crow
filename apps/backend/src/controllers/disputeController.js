@@ -1,4 +1,4 @@
-const { query, run } = require("../config/db");
+const { query, run } = require("#src/config/db");
 
 /**
  * POST /api/escrows/:id/dispute-evidence

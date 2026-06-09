@@ -3,9 +3,9 @@ const express = require("express");
 const cors = require("cors");
 const path = require("node:path");
 
-const { initDb } = require("./config/db");
-const escrowRoutes = require("./routes/escrows");
-const errorHandler = require("./middleware/errorHandler");
+const { initDb } = require("#src/config/db");
+const escrowRoutes = require("#src/routes/escrows");
+const errorHandler = require("#src/middleware/errorHandler");
 
 const app = express();
 const PORT = process.env.PORT || 3001;

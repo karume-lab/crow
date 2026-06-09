@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Client, type Escrow } from "../contracts/micro-escrow";
-import { getConnectedAddress, isFreighterInstalled, getFreighterWallet } from "../utils/freighter";
+import { Client, type Escrow } from "@/contracts/micro-escrow";
+import { getConnectedAddress, isFreighterInstalled, getFreighterWallet } from "@/utils/freighter";
 
 const CONTRACT_ID =
 	import.meta.env.VITE_CONTRACT_ID || "CDA7ESCROWCONTRACTID1234567890BCDEF";

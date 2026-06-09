@@ -1,8 +1,8 @@
 const router = require("express").Router();
 
-const escrowController = require("../controllers/escrowController");
-const disputeController = require("../controllers/disputeController");
-const upload = require("../middleware/upload");
+const escrowController = require("#src/controllers/escrowController");
+const disputeController = require("#src/controllers/disputeController");
+const upload = require("#src/middleware/upload");
 
 // Escrow metadata
 router.post("/:id/metadata", escrowController.saveMetadata);

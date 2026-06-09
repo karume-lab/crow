@@ -1,4 +1,4 @@
-const { queryOne, run } = require("../config/db");
+const { queryOne, run } = require("#src/config/db");
 
 /**
  * POST /api/escrows/:id/metadata

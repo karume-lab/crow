@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Header } from "./components/Header";
-import { useBackendApi } from "./hooks/useBackendApi";
-import { useEscrowContract } from "./hooks/useEscrowContract";
-import { CreateEscrowView } from "./views/CreateEscrowView";
-import { DashboardGridView } from "./views/DashboardGridView";
-import { DisputeEvidenceModal } from "./views/DisputeEvidenceModal";
-import { ResolveDisputeModal } from "./views/ResolveDisputeModal";
+import { Header } from "@/components/Header";
+import { useBackendApi } from "@/hooks/useBackendApi";
+import { useEscrowContract } from "@/hooks/useEscrowContract";
+import { CreateEscrowView } from "@/views/CreateEscrowView";
+import { DashboardGridView } from "@/views/DashboardGridView";
+import { DisputeEvidenceModal } from "@/views/DisputeEvidenceModal";
+import { ResolveDisputeModal } from "@/views/ResolveDisputeModal";
 
 function App() {
 	const {
