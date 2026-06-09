@@ -111,7 +111,7 @@ export const Header: React.FC<HeaderProps> = ({
 									→
 								</div>
 							</button>
-
+k
 							<div className="border-t border-[#E4E4E7] my-4 pt-4">
 								<span className="text-[10px] uppercase font-bold tracking-wider text-[#71717A]">
 									Simulated Local Profiles
@@ -120,19 +120,19 @@ export const Header: React.FC<HeaderProps> = ({
 
 							<MockProfileButton
 								label="Client Profile"
-								address="GACLIENT1234567890ABCDEF1234567890ABCDEF1234567890AB"
+								address="GB4LYIFI42YRPJRJFJA7THO7YGT5QF2V2FUUQ7ZJSDGLQNJVOFHXWWYK"
 								onConnect={handleMockConnect}
 							/>
 
 							<MockProfileButton
 								label="Freelancer Profile"
-								address="GAFREELANCER1234567890ABCDEF1234567890ABCDEF1234567"
+								address="GDOMDMAKP7YBV7ZRGIKFNC4YSTI5UCLQ5TC63OBK647ONYYRGR43AN6V"
 								onConnect={handleMockConnect}
 							/>
 
 							<MockProfileButton
 								label="Arbiter Profile"
-								address="GAARBITER1234567890ABCDEF1234567890ABCDEF1234567890"
+								address="GD4WVSE4OFHX2OONSJCTDJ2YZV6SQ2B5CCM3DVJEFE6T6BZ44DGRH3H4"
 								onConnect={handleMockConnect}
 							/>
 						</div>
