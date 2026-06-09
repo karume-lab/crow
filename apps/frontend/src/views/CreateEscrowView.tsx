@@ -24,7 +24,7 @@ export const CreateEscrowView: React.FC<CreateEscrowViewProps> = ({
 	const [freelancer, setFreelancer] = useState("");
 	const [arbiter, setArbiter] = useState("");
 	const [token, setToken] = useState(
-		"CAAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQC526",
+		"CDMLFMKMMD7MWZP3FKUBZPVHTUEDLSX4BYGYKH4GCESXYHS3IHQ4EIG4",
 	);
 	const [amount, setAmount] = useState("");
 

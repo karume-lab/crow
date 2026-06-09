@@ -111,7 +111,6 @@ export const Header: React.FC<HeaderProps> = ({
 									→
 								</div>
 							</button>
-k
 							<div className="border-t border-[#E4E4E7] my-4 pt-4">
 								<span className="text-[10px] uppercase font-bold tracking-wider text-[#71717A]">
 									Simulated Local Profiles
