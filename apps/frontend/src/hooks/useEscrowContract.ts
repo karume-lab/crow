@@ -28,17 +28,20 @@ export function useEscrowContract() {
 				rpcUrl: RPC_URL,
 				allowHttp: true,
 				publicKey: userAddress || undefined,
-				...(wallet && {
-					signTransaction: async (tx: string) => {
-						const signedTxXdr = await wallet.signTransaction(tx, {
+				...(wallet && userAddress && !isSimulated && {
+					signTransaction: async (txXdr: string) => {
+						// 1. Freighter signs it and returns a raw string
+						const signedString = await wallet.signTransaction(txXdr, {
 							networkPassphrase: NETWORK_PASSPHRASE,
+							network: "STANDALONE", 
 						});
-						return { signedTxXdr };
+						// 2. Wrap that string in the specific object structure the SDK demands
+						return { signedTxXdr: signedString };
 					},
 				}),
 			});
 		},
-		[userAddress],
+		[userAddress, isSimulated],
 	);
 
 	useEffect(() => {
