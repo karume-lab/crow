@@ -98,6 +98,8 @@ while ! curl -s -f "http://localhost:8000/friendbot?addr=$MOCK_CLIENT" > /dev/nu
   sleep 2
 done
 
+echo "Deploying Native XLM token wrapper..."
+stellar contract asset deploy --asset native --source-account dev_deployer --network standalone > /dev/null 2>&1 || true
 TOKEN_ID=$(stellar contract id asset --asset native --network standalone)
 
 echo "Writing environment variables to apps/frontend/.env..."
