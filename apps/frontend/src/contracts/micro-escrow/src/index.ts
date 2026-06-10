@@ -87,7 +87,7 @@ export interface Client {
   /**
    * Construct and simulate a trigger_dispute transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
-  trigger_dispute: ({escrow_id}: {escrow_id: u32}, options?: MethodOptions) => Promise<AssembledTransaction<null>>
+  trigger_dispute: ({caller, escrow_id}: {caller: string, escrow_id: u32}, options?: MethodOptions) => Promise<AssembledTransaction<null>>
 
 }
 export class Client extends ContractClient {
@@ -115,7 +115,7 @@ export class Client extends ContractClient {
         "AAAAAAAAAAAAAAANY3JlYXRlX2VzY3JvdwAAAAAAAAUAAAAAAAAABmNsaWVudAAAAAAAEwAAAAAAAAAKZnJlZWxhbmNlcgAAAAAAEwAAAAAAAAAHYXJiaXRlcgAAAAATAAAAAAAAAAV0b2tlbgAAAAAAABMAAAAAAAAABmFtb3VudAAAAAAACwAAAAEAAAAE",
         "AAAAAAAAAAAAAAANcmVsZWFzZV9mdW5kcwAAAAAAAAEAAAAAAAAACWVzY3Jvd19pZAAAAAAAAAQAAAAA",
         "AAAAAAAAAAAAAAAPcmVzb2x2ZV9kaXNwdXRlAAAAAAIAAAAAAAAACWVzY3Jvd19pZAAAAAAAAAQAAAAAAAAAEGZyZWVsYW5jZXJfc2hhcmUAAAALAAAAAA==",
-        "AAAAAAAAAAAAAAAPdHJpZ2dlcl9kaXNwdXRlAAAAAAEAAAAAAAAACWVzY3Jvd19pZAAAAAAAAAQAAAAA" ]),
+        "AAAAAAAAAAAAAAAPdHJpZ2dlcl9kaXNwdXRlAAAAAAIAAAAAAAAABmNhbGxlcgAAAAAAEwAAAAAAAAAJZXNjcm93X2lkAAAAAAAABAAAAAA=" ]),
       options
     )
   }

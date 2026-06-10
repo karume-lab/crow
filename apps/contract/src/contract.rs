@@ -4,10 +4,7 @@ use crate::types::{DataKey, Escrow, EscrowStatus};
 #[cfg(any(test, feature = "testutils"))]
 extern crate std;
 
-#[cfg(any(test, feature = "testutils"))]
-std::thread_local! {
-    pub static TEST_CALLER: std::cell::RefCell<Option<soroban_sdk::Address>> = std::cell::RefCell::new(None);
-}
+
 
 #[contract]
 pub struct MicroEscrowContract;
@@ -82,7 +79,7 @@ impl MicroEscrowContract {
         env.storage().persistent().set(&escrow_key, &escrow);
     }
 
-    pub fn trigger_dispute(env: Env, escrow_id: u32) {
+    pub fn trigger_dispute(env: Env, caller: Address, escrow_id: u32) {
         let escrow_key = DataKey::Escrow(escrow_id);
         let mut escrow: Escrow = env
             .storage()
@@ -90,45 +87,10 @@ impl MicroEscrowContract {
             .get(&escrow_key)
             .unwrap_or_else(|| panic!("escrow not found"));
 
-        let (has_client_auth, has_freelancer_auth) = {
-            #[cfg(any(test, feature = "testutils"))]
-            {
-                let mut a = env.auths();
-                if a.is_empty() {
-                    TEST_CALLER.with(|caller| {
-                        if let Some(ref addr) = *caller.borrow() {
-                            a.push((
-                                addr.clone(),
-                                soroban_sdk::testutils::AuthorizedInvocation {
-                                    function: soroban_sdk::testutils::AuthorizedFunction::Contract((
-                                        env.current_contract_address(),
-                                        soroban_sdk::Symbol::new(&env, "trigger_dispute"),
-                                        soroban_sdk::IntoVal::into_val(&(escrow_id,), &env),
-                                    )),
-                                    sub_invocations: std::vec::Vec::new(),
-                                }
-                            ));
-                        }
-                    });
-                }
-                (
-                    a.iter().any(|(addr, _)| addr == &escrow.client),
-                    a.iter().any(|(addr, _)| addr == &escrow.freelancer),
-                )
-            }
-            #[cfg(not(any(test, feature = "testutils")))]
-            {
-                (false, false)
-            }
-        };
-
-        if has_client_auth {
-            escrow.client.require_auth();
-        } else if has_freelancer_auth {
-            escrow.freelancer.require_auth();
-        } else {
+        if caller != escrow.client && caller != escrow.freelancer {
             panic!("unauthorized caller");
         }
+        caller.require_auth();
 
         if escrow.status != EscrowStatus::Active {
             panic!("escrow is not active");

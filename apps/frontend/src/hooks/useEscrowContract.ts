@@ -198,7 +198,7 @@ export function useEscrowContract() {
 			}
 			setLoading(true);
 			try {
-				const tx = await client.trigger_dispute({ escrow_id: escrowId });
+				const tx = await client.trigger_dispute({ caller: userAddress, escrow_id: escrowId });
 				await tx.signAndSend();
 				await refreshEscrows();
 				return true;

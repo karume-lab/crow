@@ -83,20 +83,7 @@ fn test_dispute_and_resolution() {
     let escrow_id = contract_client.create_escrow(&client, &freelancer, &arbiter, &token_addr, &amount);
 
     // Trigger dispute
-    contract::TEST_CALLER.with(|caller| {
-        *caller.borrow_mut() = Some(client.clone());
-    });
-    env.mock_auths(&[soroban_sdk::testutils::MockAuth {
-        address: &client,
-        invoke: &soroban_sdk::testutils::MockAuthInvoke {
-            contract: &contract_client.address,
-            fn_name: "trigger_dispute",
-            args: soroban_sdk::IntoVal::into_val(&(escrow_id,), &env),
-            sub_invokes: &[],
-        },
-    }]);
-    contract_client.trigger_dispute(&escrow_id);
-    env.mock_all_auths();
+    contract_client.trigger_dispute(&client, &escrow_id);
 
     // Resolve dispute (arbiter splits 600 to freelancer, 400 to client)
     let freelancer_share = 600i128;
@@ -133,19 +120,7 @@ fn test_unauthorized_resolve_dispute() {
     let escrow_id = contract_client.create_escrow(&client, &freelancer, &arbiter, &token_addr, &amount);
 
     // Trigger dispute
-    contract::TEST_CALLER.with(|caller| {
-        *caller.borrow_mut() = Some(client.clone());
-    });
-    env.mock_auths(&[soroban_sdk::testutils::MockAuth {
-        address: &client,
-        invoke: &soroban_sdk::testutils::MockAuthInvoke {
-            contract: &contract_client.address,
-            fn_name: "trigger_dispute",
-            args: soroban_sdk::IntoVal::into_val(&(escrow_id,), &env),
-            sub_invokes: &[],
-        },
-    }]);
-    contract_client.trigger_dispute(&escrow_id);
+    contract_client.trigger_dispute(&client, &escrow_id);
 
     // Override mock_all_auths to cause resolve_dispute to fail as arbiter did not sign
     contract_client.mock_auths(&[]).resolve_dispute(&escrow_id, &500i128);
