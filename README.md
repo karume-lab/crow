@@ -325,3 +325,10 @@ For production security, it is highly recommended to use a hardware wallet or a 
      VITE_CONTRACT_ID=YOUR_MAINNET_CONTRACT_ID
      ```
    * Set up your production Freighter / Web3 Wallet to point to **Mainnet**.
+
+---
+
+## Contributors
+
+- karume-lab (<danielkarume@outlook.com>)
+- NagawaEsther (<nagawaesther227@gmail.com>)
